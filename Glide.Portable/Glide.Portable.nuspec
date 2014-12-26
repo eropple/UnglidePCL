@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>EdCanHack.Glide</id>
+    <version>$version$</version>
+    <title>EdCanHack.Glide (Portable)</title>
+    <authors>Jacob Albano</authors>
+    <owners>Ed Ropple</owners>
+    <licenseUrl>https://github.com/eropple/GlidePCL/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/eropple/GlidePCL</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>
+      Glide is a tweening library implemented as a Portable Class Library.
+    </summary>
+    <description>
+      Glide is a tweening library implemented as a Portable Class Library.
+    </description>
+    <releaseNotes>
+1.0.0: Initial release.
+    </releaseNotes>
+    <copyright>Copyright © 2014 Jacob Albano and Ed Ropple</copyright>
+    <tags>tweening gamedev pcl portable</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>
