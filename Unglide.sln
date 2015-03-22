@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22310.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glide.Portable", "Glide.Portable\Glide.Portable.csproj", "{359FD6D2-C7A0-4575-AAF8-4823D331066F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unglide.Portable", "Glide.Portable\Unglide.Portable.csproj", "{359FD6D2-C7A0-4575-AAF8-4823D331066F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8675150C-49F1-4832-AB4D-0359701195B4}"
 	ProjectSection(SolutionItems) = preProject

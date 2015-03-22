@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Glide;
 
-namespace Glide
+namespace Unglide
 {
     public partial class Tween
     {
@@ -37,21 +36,21 @@ namespace Glide
         private readonly List<float> _start;
         private readonly List<float> _range;
         private readonly List<float> _end;
-        private readonly List<GlideInfo> _vars;
+        private readonly List<UnglideInfo> _vars;
 
         protected object Target;
-        private Tween.TweenerImpl _parent;
+        private TweenerImpl _parent;
 
-        public float TimeRemaining { get { return Duration - _time; } }
+        public float TimeRemaining => Duration - _time;
         public float Completion { get { var c = _time / Duration; return c < 0 ? 0 : (c > 1 ? 1 : c); } }
 
-        public bool Looping { get { return _repeatCount > 0; } }
+        public bool Looping => _repeatCount > 0;
 
         public Tween()
         {
             _elapsed = 0;
 
-            _vars = new List<GlideInfo>();
+            _vars = new List<UnglideInfo>();
             _start = new List<float>();
             _range = new List<float>();
             _end = new List<float>();
@@ -68,14 +67,12 @@ namespace Glide
                 return;
             }
 
-            if (_time == 0)
+            if (Math.Abs(_time) < Single.Epsilon)
             {
-                if (_begin != null)
-                    _begin();
+                _begin?.Invoke();
             }
 
-            if (_update != null)
-                _update();
+            _update?.Invoke(Completion);
 
             _time += _elapsed;
             float t = _time / Duration;
@@ -101,7 +98,7 @@ namespace Glide
                     doComplete = true;
                 }
 
-                if (_time == 0)
+                if (Math.Abs(_time) < Single.Epsilon)
                 {
                     //	If the timer is zero here, we just restarted.
                     //	If reflect mode is on, flip start to end
@@ -155,25 +152,26 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween From(object values)
         {
-            foreach (PropertyInfo property in values.GetType().GetTypeInfo().DeclaredProperties)
+            foreach (var property in values.GetType().GetTypeInfo().DeclaredProperties)
             {
-                int index = _vars.FindIndex(i => String.Compare(i.Name, property.Name, StringComparison.OrdinalIgnoreCase) == 0);
+                var property1 = property;
+                var index = _vars.FindIndex(i => String.Compare(i.Name, property1.Name, StringComparison.OrdinalIgnoreCase) == 0);
                 if (index >= 0)
                 {
                     //	if we're already tweening this value, adjust the range
                     var info = _vars[index];
 
-                    var to = new GlideInfo(values, property.Name, false);
+                    var to = new UnglideInfo(values, property.Name, false);
                     info.Value = to.Value;
 
                     _start[index] = Convert.ToSingle(info.Value);
-                    _range[index] = this._end[index] - _start[index];
+                    _range[index] = _end[index] - _start[index];
                 }
                 else
                 {
                     //	if we aren't tweening this value, just set it
-                    var info = new GlideInfo(Target, property.Name, true);
-                    var to = new GlideInfo(values, property.Name, false);
+                    var info = new UnglideInfo(Target, property.Name);
+                    var to = new UnglideInfo(values, property.Name, false);
                     info.Value = to.Value;
                 }
             }
@@ -188,7 +186,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween Ease(Func<float, float> ease)
         {
-            this._ease = ease;
+            _ease = ease;
             return this;
         }
 
@@ -220,7 +218,7 @@ namespace Glide
         /// </summary>
         /// <param name="callback">The function to use.</param>
         /// <returns>A reference to this.</returns>
-        public Tween OnUpdate(Action callback)
+        public Tween OnUpdate(Action<Single> callback)
         {
             _update = callback;
             return this;
@@ -282,7 +280,7 @@ namespace Glide
                 float r = angle + _range[count];
 
                 float d = r - angle;
-                float a = (float)Math.Abs(d);
+                float a = Math.Abs(d);
 
                 if (a > 181)
                 {

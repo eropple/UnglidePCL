@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Glide
+namespace Unglide
 {
-    internal class GlideInfo
+    internal class UnglideInfo
     {
-        static GlideInfo()
+        static UnglideInfo()
         {
-            numericTypes = new Type[] {
+            NumericTypes = new[] {
                 typeof(Int16),
                 typeof(Int32),
                 typeof(Int64),
@@ -20,65 +20,65 @@ namespace Glide
             };
         }
 
-        private static Type[] numericTypes;
+        private static readonly Type[] NumericTypes;
 
-        private FieldInfo field;
-        private PropertyInfo prop;
-        private bool isNumeric;
+        private readonly FieldInfo _field;
+        private readonly PropertyInfo _prop;
+        private readonly bool _isNumeric;
 
-        private object Target;
+        private readonly object _target;
 
         public string Name { get; private set; }
 
         public object Value
         {
-            get { return field != null ? field.GetValue(Target) : prop.GetValue(Target, null); }
+            get { return _field != null ? _field.GetValue(_target) : _prop.GetValue(_target, null); }
             set
             {
 
-                if (isNumeric)
+                if (_isNumeric)
                 {
                     Type type = null;
-                    if (field != null) type = field.FieldType;
-                    if (prop != null) type = prop.PropertyType;
-                    if (AnyEquals(type, numericTypes))
+                    if (_field != null) type = _field.FieldType;
+                    if (_prop != null) type = _prop.PropertyType;
+                    if (AnyEquals(type, NumericTypes))
                         value = Convert.ChangeType(value, type);
                 }
 
-                if (field != null)
-                    field.SetValue(Target, value);
+                if (_field != null)
+                    _field.SetValue(_target, value);
                 else
-                    prop.SetValue(Target, value, null);
+                    _prop?.SetValue(_target, value, null);
             }
         }
 
-        public GlideInfo(object Target, string property, bool writeRequired = true)
+        public UnglideInfo(object target, string property, bool writeRequired = true)
         {
-            this.Target = Target;
+            _target = target;
             Name = property;
 
-            Type targetType = null;
-            if (IsType(Target))
+            Type targetType;
+            if (IsType(target))
             {
-                targetType = (Type)Target;
+                targetType = (Type)target;
             }
             else
             {
-                targetType = Target.GetType();
+                targetType = target.GetType();
             }
 
-            field = targetType.GetTypeInfo().DeclaredFields.FirstOrDefault(f =>
+            _field = targetType.GetTypeInfo().DeclaredFields.FirstOrDefault(f =>
                 string.Equals(property, f.Name) && !f.IsStatic);
 
-            prop = writeRequired
+            _prop = writeRequired
                 ? targetType.GetTypeInfo().DeclaredProperties.FirstOrDefault(p =>
                     string.Equals(property, p.Name) && !p.GetMethod.IsStatic && p.CanRead && p.CanWrite)
                 : targetType.GetTypeInfo().DeclaredProperties.FirstOrDefault(p =>
                     string.Equals(property, p.Name) && !p.GetMethod.IsStatic && p.CanRead);
 
-            if (field == null)
+            if (_field == null)
             {
-                if (prop == null)
+                if (_prop == null)
                 {
                     //	Couldn't find either
                     throw new Exception(string.Format("Field or '{0}' property '{1}' not found on object of type {2}.",
@@ -88,7 +88,7 @@ namespace Glide
             }
 
             var valueType = Value.GetType();
-            isNumeric = AnyEquals(valueType, numericTypes);
+            _isNumeric = AnyEquals(valueType, NumericTypes);
             CheckPropertyType(valueType, property, targetType.Name);
         }
 
@@ -124,7 +124,7 @@ namespace Glide
 
         protected virtual bool ValidatePropertyType(Type type)
         {
-            return isNumeric;
+            return _isNumeric;
         }
 
         static bool AnyEquals<T>(T value, params T[] options)

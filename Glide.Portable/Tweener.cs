@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Glide
+namespace Unglide
 {
     public class Tweener : Tween.TweenerImpl
     { }
@@ -13,21 +13,22 @@ namespace Glide
         {
             static TweenerImpl()
             {
-                _dummy = new { };
+                Dummy = new { };
                 Tweener = new Tweener();
             }
 
             public TweenerImpl()
             {
-                tweens = new Dictionary<object, List<Tween>>();
-                toRemove = new List<Tween>();
-                toAdd = new List<Tween>();
+                _tweens = new Dictionary<object, List<Tween>>();
+                _toRemove = new List<Tween>();
+                _toAdd = new List<Tween>();
             }
 
             public static readonly Tweener Tweener;
-            private static object _dummy;
-            private Dictionary<object, List<Tween>> tweens;
-            private List<Tween> toRemove, toAdd;
+            private static readonly object Dummy;
+            private readonly Dictionary<object, List<Tween>> _tweens;
+            private readonly List<Tween> _toRemove;
+            private readonly List<Tween> _toAdd;
 
             /// <summary>
             /// Tweens a set of numeric properties on an object.
@@ -58,8 +59,8 @@ namespace Glide
 
                 foreach (PropertyInfo property in values.GetType().GetTypeInfo().DeclaredProperties)
                 {
-                    var info = new GlideInfo(target, property.Name);
-                    var to = Convert.ToSingle(new GlideInfo(values, property.Name, false).Value);
+                    var info = new UnglideInfo(target, property.Name);
+                    var to = Convert.ToSingle(new UnglideInfo(values, property.Name, false).Value);
 
                     float s = Convert.ToSingle(info.Value);
                     float r = to - s;
@@ -81,7 +82,7 @@ namespace Glide
             public void AddTween(Tween tween)
             {
                 tween._parent = this;
-                toAdd.Add(tween);
+                _toAdd.Add(tween);
             }
 
             /// <summary>
@@ -92,7 +93,7 @@ namespace Glide
             /// <returns>The tween created, for setting properties.</returns>
             public Tween Timer(float duration, float delay = 0)
             {
-                return Tween(_dummy, null, duration, delay);
+                return Tween(Dummy, null, duration, delay);
             }
 
             /// <summary>
@@ -100,7 +101,7 @@ namespace Glide
             /// </summary>
             public void Cancel()
             {
-                ApplyAll(glide => toRemove.Add(glide));
+                ApplyAll(glide => _toRemove.Add(glide));
             }
 
             /// <summary>
@@ -112,7 +113,7 @@ namespace Glide
                 {
                     glide._time = glide.Duration;
                     glide._update = null;
-                    toRemove.Add(glide);
+                    _toRemove.Add(glide);
                 });
             }
 
@@ -157,12 +158,13 @@ namespace Glide
 
             internal void Remove(Tween glide)
             {
-                toRemove.Add(glide);
+                _toRemove.Add(glide);
             }
 
             private void ApplyAll(Action<Tween> action)
             {
-                foreach (var list in tweens.Values)
+                // ReSharper disable once LoopCanBePartlyConvertedToQuery
+                foreach (var list in _tweens.Values)
                 {
                     foreach (var glide in list)
                     {
@@ -173,30 +175,30 @@ namespace Glide
 
             private void AddAndRemove()
             {
-                foreach (var add in toAdd)
+                foreach (var add in _toAdd)
                 {
-                    List<Tween> list = null;
-                    if (!tweens.TryGetValue(add.Target, out list))
-                        tweens[add.Target] = list = new List<Tween>();
+                    List<Tween> list;
+                    if (!_tweens.TryGetValue(add.Target, out list))
+                        _tweens[add.Target] = list = new List<Tween>();
 
                     list.Add(add);
                 }
 
-                foreach (var remove in toRemove)
+                foreach (var remove in _toRemove)
                 {
                     List<Tween> list;
-                    if (tweens.TryGetValue(remove.Target, out list))
+                    if (_tweens.TryGetValue(remove.Target, out list))
                     {
                         list.Remove(remove);
                         if (list.Count == 0)
                         {
-                            tweens.Remove(remove.Target);
+                            _tweens.Remove(remove.Target);
                         }
                     }
                 }
 
-                toAdd.Clear();
-                toRemove.Clear();
+                _toAdd.Clear();
+                _toRemove.Clear();
             }
 
             #region Bulk control
@@ -206,7 +208,7 @@ namespace Glide
                 foreach (var target in targets)
                 {
                     List<Tween> list;
-                    if (tweens.TryGetValue(target, out list))
+                    if (_tweens.TryGetValue(target, out list))
                     {
                         foreach (var glide in list)
                         {

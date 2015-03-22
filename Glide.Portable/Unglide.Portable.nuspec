@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>EdCanHack.Unglide</id>
+    <version>$version$</version>
+    <title>EdCanHack.Unglide (Portable)</title>
+    <authors>Jacob Albano, Ed Ropple</authors>
+    <owners>Ed Ropple (ed+unglide@edropple.com)</owners>
+    <licenseUrl>https://github.com/eropple/UnglidePCL/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/eropple/UnglidePCL</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>
+      Unglide is a tweening library implemented as a Portable Class Library.
+    </summary>
+    <description>
+      Unglide is a tweening library implemented as a Portable Class Library.
+    </description>
+    <releaseNotes>
+2.0.0: Forked from Glide to Unglide, changed the behavior of OnUpdate callbacks.
+1.0.0: Initial release.
+    </releaseNotes>
+    <copyright>Copyright © 2014 Jacob Albano and Ed Ropple</copyright>
+    <tags>tweening gamedev pcl portable</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+</package>

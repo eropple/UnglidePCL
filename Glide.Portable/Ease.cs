@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Glide
+namespace Unglide
 {
     /// <summary>
     /// Static class with useful easer functions that can be used by Tweens.
     /// </summary>
     public static class Ease
     {
-        const float PI = 3.14159f;
-        const float PI2 = PI / 2;
+        const float Pi = 3.14159f;
+        const float Pi2 = Pi / 2;
         const float B1 = 1 / 2.75f;
         const float B2 = 2 / 2.75f;
         const float B3 = 1.5f / 2.75f;
@@ -23,7 +23,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float ElasticIn(float t)
         {
-            return (float)(Math.Sin(13 * PI2 * t) * Math.Pow(2, 10 * (t - 1)));
+            return (float)(Math.Sin(13 * Pi2 * t) * Math.Pow(2, 10 * (t - 1)));
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float ElasticOut(float t)
         {
-            return (float)(Math.Sin(-13 * PI2 * (t + 1)) * Math.Pow(2, -10 * t) + 1);
+            return (float)(Math.Sin(-13 * Pi2 * (t + 1)) * Math.Pow(2, -10 * t) + 1);
         }
 
         /// <summary>
@@ -45,10 +45,10 @@ namespace Glide
         {
             if (t < 0.5)
             {
-                return (float)(0.5 * Math.Sin(13 * PI2 * (2 * t)) * Math.Pow(2, 10 * ((2 * t) - 1)));
+                return (float)(0.5 * Math.Sin(13 * Pi2 * (2 * t)) * Math.Pow(2, 10 * ((2 * t) - 1)));
             }
 
-            return (float)(0.5 * (Math.Sin(-13 * PI2 * ((2 * t - 1) + 1)) * Math.Pow(2, -10 * (2 * t - 1)) + 2));
+            return (float)(0.5 * (Math.Sin(-13 * Pi2 * ((2 * t - 1) + 1)) * Math.Pow(2, -10 * (2 * t - 1)) + 2));
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuadIn(float t)
         {
-            return (float)(t * t);
+            return t * t;
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuadOut(float t)
         {
-            return (float)(-t * (t - 2));
+            return -t * (t - 2);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuadInOut(float t)
         {
-            return (float)(t <= .5 ? t * t * 2 : 1 - (--t) * t * 2);
+            return t <= .5 ? t * t * 2 : 1 - (--t) * t * 2;
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float CubeIn(float t)
         {
-            return (float)(t * t * t);
+            return t * t * t;
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float CubeOut(float t)
         {
-            return (float)(1 + (--t) * t * t);
+            return 1 + (--t) * t * t;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float CubeInOut(float t)
         {
-            return (float)(t <= .5 ? t * t * t * 4 : 1 + (--t) * t * t * 4);
+            return t <= .5 ? t * t * t * 4 : 1 + (--t) * t * t * 4;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuartIn(float t)
         {
-            return (float)(t * t * t * t);
+            return t * t * t * t;
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuartOut(float t)
         {
-            return (float)(1 - (t -= 1) * t * t * t);
+            return 1 - (t -= 1) * t * t * t;
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuintIn(float t)
         {
-            return (float)(t * t * t * t * t);
+            return t * t * t * t * t;
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuintOut(float t)
         {
-            return (float)((t = t - 1) * t * t * t * t + 1);
+            return (t = t - 1) * t * t * t * t + 1;
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float QuintInOut(float t)
         {
-            return (float)(((t *= 2) < 1) ? (t * t * t * t * t) / 2 : ((t -= 2) * t * t * t * t + 2) / 2);
+            return ((t *= 2) < 1) ? (t * t * t * t * t) / 2 : ((t -= 2) * t * t * t * t + 2) / 2;
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float SineIn(float t)
         {
-            return (float)(-Math.Cos(PI2 * t) + 1);
+            return (float)(-Math.Cos(Pi2 * t) + 1);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float SineOut(float t)
         {
-            return (float)(Math.Sin(PI2 * t));
+            return (float)(Math.Sin(Pi2 * t));
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Glide
         /// <returns>Eased timescale.</returns>
         public static float SineInOut(float t)
         {
-            return (float)(-Math.Cos(PI * t) / 2 + .5);
+            return (float)(-Math.Cos(Pi * t) / 2 + .5);
         }
 
         /// <summary>
