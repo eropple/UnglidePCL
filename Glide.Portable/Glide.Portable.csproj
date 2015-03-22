@@ -35,7 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <None Include="Glide.Portable.nuspec" />
+    <None Include="Glide.Portable.nuspec">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ease.cs" />

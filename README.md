@@ -1,16 +1,17 @@
-# Glide
+# Unglide #
 
-Glide is a super-simple tweening library for C#.
+Unglide is a super-simple tweening library for C#.
 
-**This is a Git and PCL/NuGet port of Jacob Albano's Glide. You can find the
-original [here](https://bitbucket.org/jacobalbano/glide).**
+**This is a Git and PCL/NuGet fork--not port--of Jacob Albano's Glide. You can find the
+original [here](https://bitbucket.org/jacobalbano/glide). Some things may have changed
+and may be undocumented.**
 
 ## Installation
-[Glide](https://www.nuget.org/packages/EdCanHack.Glide) is available
+[Unglide](https://www.nuget.org/packages/EdCanHack.Unglide) is available
 on NuGet. To install, run the following command in the Package Manager Console:
 
 ```
-PM> Install-Package EdCanHack.Glide
+PM> Install-Package EdCanHack.Unglide
 ```
 
 ## Use
@@ -34,7 +35,7 @@ Tweening properties is done with a call to Tween. Pass the object to tween, an [
 //	This tween will move the X and Y properties of the target
 Tweener.Tween(target, new { X = toX, Y = toY }, duration, delay);
 ```
-You can also use Glide to set up timed callbacks.
+You can also use Glide to set up timed callbacks. **Unlike Glide, these callbacks return a value between 0.0 and 1.0 representing the completion status of the tween.**
 
 ```csharp
 Tweener.Timer(duration, delay).OnComplete(CompleteCallback);
@@ -84,7 +85,7 @@ You can specify a number of special behaviors for a tween to use. Calls can be c
 Tweener.Tween(...).Ease(Ease.ElasticOut);
 
 Tweener.Tween(...).OnComplete(() => Console.WriteLine("done"));
-Tweener.Tween(...).OnUpdate(() => Console.WriteLine("updating"));
+Tweener.Tween(...).OnUpdate((completion) => Console.WriteLine("updating, at {0}%", Convert.ToInt32(completion * 100)));
 
 //  Repeat twice
 Tweener.Tween(...).Repeat(2);

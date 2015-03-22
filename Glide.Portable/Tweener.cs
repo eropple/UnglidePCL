@@ -64,10 +64,10 @@ namespace Glide
                     float s = Convert.ToSingle(info.Value);
                     float r = to - s;
 
-                    tween.vars.Add(info);
-                    tween.start.Add(s);
-                    tween.range.Add(r);
-                    tween.end.Add(to);
+                    tween._vars.Add(info);
+                    tween._start.Add(s);
+                    tween._range.Add(r);
+                    tween._end.Add(to);
                 }
 
                 return tween;
@@ -80,7 +80,7 @@ namespace Glide
             /// <param name="tween">The tween to add.</param>
             public void AddTween(Tween tween)
             {
-                tween.parent = this;
+                tween._parent = this;
                 toAdd.Add(tween);
             }
 
@@ -110,8 +110,8 @@ namespace Glide
             {
                 ApplyAll(glide =>
                 {
-                    glide.time = glide.Duration;
-                    glide.update = null;
+                    glide._time = glide.Duration;
+                    glide._update = null;
                     toRemove.Add(glide);
                 });
             }
@@ -148,7 +148,7 @@ namespace Glide
             {
                 ApplyAll(glide =>
                 {
-                    glide.elapsed = secondsElapsed;
+                    glide._elapsed = secondsElapsed;
                     glide.Update();
                 });
 

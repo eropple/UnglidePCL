@@ -17,8 +17,9 @@ namespace Glide
         }
 
         #region Callbacks
-        private Func<float, float> ease;
-        private Action begin, update, complete;
+        private Func<float, float> _ease;
+        private Action _begin, _complete;
+        private Action<float> _update;
         #endregion
 
         #region Timing
@@ -26,32 +27,34 @@ namespace Glide
         protected float Delay;
         protected float Duration;
 
-        private float time;
-        private float elapsed;
+        private float _time;
+        private float _elapsed;
         #endregion
 
-        private int repeatCount;
-        private Behavior behavior;
+        private int _repeatCount;
+        private Behavior _behavior;
 
-        private List<float> start, range, end;
-        private List<GlideInfo> vars;
+        private readonly List<float> _start;
+        private readonly List<float> _range;
+        private readonly List<float> _end;
+        private readonly List<GlideInfo> _vars;
 
         protected object Target;
-        private Tween.TweenerImpl parent;
+        private Tween.TweenerImpl _parent;
 
-        public float TimeRemaining { get { return Duration - time; } }
-        public float Completion { get { var c = time / Duration; return c < 0 ? 0 : (c > 1 ? 1 : c); } }
+        public float TimeRemaining { get { return Duration - _time; } }
+        public float Completion { get { var c = _time / Duration; return c < 0 ? 0 : (c > 1 ? 1 : c); } }
 
-        public bool Looping { get { return repeatCount > 0; } }
+        public bool Looping { get { return _repeatCount > 0; } }
 
         public Tween()
         {
-            elapsed = 0;
+            _elapsed = 0;
 
-            vars = new List<GlideInfo>();
-            start = new List<float>();
-            range = new List<float>();
-            end = new List<float>();
+            _vars = new List<GlideInfo>();
+            _start = new List<float>();
+            _range = new List<float>();
+            _end = new List<float>();
         }
 
         internal void Update()
@@ -61,73 +64,73 @@ namespace Glide
 
             if (Delay > 0)
             {
-                Delay -= elapsed;
+                Delay -= _elapsed;
                 return;
             }
 
-            if (time == 0)
+            if (_time == 0)
             {
-                if (begin != null)
-                    begin();
+                if (_begin != null)
+                    _begin();
             }
 
-            if (update != null)
-                update();
+            if (_update != null)
+                _update();
 
-            time += elapsed;
-            float t = time / Duration;
+            _time += _elapsed;
+            float t = _time / Duration;
             bool doComplete = false;
 
-            if (time >= Duration)
+            if (_time >= Duration)
             {
-                if (repeatCount > 0)
+                if (_repeatCount > 0)
                 {
-                    --repeatCount;
-                    time = t = 0;
+                    --_repeatCount;
+                    _time = t = 0;
                 }
-                else if (repeatCount < 0)
+                else if (_repeatCount < 0)
                 {
                     doComplete = true;
-                    time = t = 0;
+                    _time = t = 0;
                 }
                 else
                 {
-                    time = Duration;
+                    _time = Duration;
                     t = 1;
-                    parent.Remove(this);
+                    _parent.Remove(this);
                     doComplete = true;
                 }
 
-                if (time == 0)
+                if (_time == 0)
                 {
                     //	If the timer is zero here, we just restarted.
                     //	If reflect mode is on, flip start to end
-                    if ((behavior & Behavior.Reflect) == Behavior.Reflect)
+                    if ((_behavior & Behavior.Reflect) == Behavior.Reflect)
                         Reverse();
                 }
             }
 
-            if (ease != null)
-                t = ease(t);
+            if (_ease != null)
+                t = _ease(t);
 
             Interpolate(t);
 
-            if (doComplete && complete != null)
-                complete();
+            if (doComplete && _complete != null)
+                _complete();
         }
 
         protected virtual void Interpolate(float t)
         {
-            int i = vars.Count;
+            int i = _vars.Count;
             while (i-- > 0)
             {
-                float value = start[i] + range[i] * t;
-                if ((behavior & Behavior.Round) == Behavior.Round)
+                float value = _start[i] + _range[i] * t;
+                if ((_behavior & Behavior.Round) == Behavior.Round)
                 {
                     value = (float)Math.Round(value);
                 }
 
-                if ((behavior & Behavior.Rotation) == Behavior.Rotation)
+                if ((_behavior & Behavior.Rotation) == Behavior.Rotation)
                 {
                     float angle = value % 360.0f;
 
@@ -139,7 +142,7 @@ namespace Glide
                     value = angle;
                 }
 
-                vars[i].Value = value;
+                _vars[i].Value = value;
             }
         }
 
@@ -154,17 +157,17 @@ namespace Glide
         {
             foreach (PropertyInfo property in values.GetType().GetTypeInfo().DeclaredProperties)
             {
-                int index = vars.FindIndex(i => String.Compare(i.Name, property.Name, StringComparison.OrdinalIgnoreCase) == 0);
+                int index = _vars.FindIndex(i => String.Compare(i.Name, property.Name, StringComparison.OrdinalIgnoreCase) == 0);
                 if (index >= 0)
                 {
                     //	if we're already tweening this value, adjust the range
-                    var info = vars[index];
+                    var info = _vars[index];
 
                     var to = new GlideInfo(values, property.Name, false);
                     info.Value = to.Value;
 
-                    start[index] = Convert.ToSingle(info.Value);
-                    range[index] = this.end[index] - start[index];
+                    _start[index] = Convert.ToSingle(info.Value);
+                    _range[index] = this._end[index] - _start[index];
                 }
                 else
                 {
@@ -185,7 +188,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween Ease(Func<float, float> ease)
         {
-            this.ease = ease;
+            this._ease = ease;
             return this;
         }
 
@@ -196,7 +199,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween OnBegin(Action callback)
         {
-            begin = callback;
+            _begin = callback;
             return this;
         }
 
@@ -208,7 +211,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween OnComplete(Action callback)
         {
-            complete = callback;
+            _complete = callback;
             return this;
         }
 
@@ -219,7 +222,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween OnUpdate(Action callback)
         {
-            update = callback;
+            _update = callback;
             return this;
         }
 
@@ -230,7 +233,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween Repeat(int times = -1)
         {
-            repeatCount = times;
+            _repeatCount = times;
             return this;
         }
 
@@ -240,7 +243,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween Reflect()
         {
-            behavior |= Behavior.Reflect;
+            _behavior |= Behavior.Reflect;
             return this;
         }
 
@@ -250,15 +253,15 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public virtual Tween Reverse()
         {
-            int count = vars.Count;
+            int count = _vars.Count;
             while (count-- > 0)
             {
-                float s = start[count];
-                float r = range[count];
+                float s = _start[count];
+                float r = _range[count];
 
                 //	Set start to end and end to start
-                start[count] = s + r;
-                range[count] = s - (s + r);
+                _start[count] = s + r;
+                _range[count] = s - (s + r);
             }
 
             return this;
@@ -270,13 +273,13 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween Rotation()
         {
-            behavior |= Behavior.Rotation;
+            _behavior |= Behavior.Rotation;
 
-            int count = vars.Count;
+            int count = _vars.Count;
             while (count-- > 0)
             {
-                float angle = start[count];
-                float r = angle + range[count];
+                float angle = _start[count];
+                float r = angle + _range[count];
 
                 float d = r - angle;
                 float a = (float)Math.Abs(d);
@@ -294,7 +297,7 @@ namespace Glide
                     r = 180;
                 }
 
-                range[count] = r;
+                _range[count] = r;
             }
 
             return this;
@@ -306,7 +309,7 @@ namespace Glide
         /// <returns>A reference to this.</returns>
         public Tween Round()
         {
-            behavior |= Behavior.Round;
+            _behavior |= Behavior.Round;
             return this;
         }
         #endregion
@@ -317,7 +320,7 @@ namespace Glide
         /// </summary>
         public void Cancel()
         {
-            parent.Remove(this);
+            _parent.Remove(this);
         }
 
         /// <summary>
@@ -325,9 +328,9 @@ namespace Glide
         /// </summary>
         public void CancelAndComplete()
         {
-            time = Duration;
-            update = null;
-            parent.Remove(this);
+            _time = Duration;
+            _update = null;
+            _parent.Remove(this);
         }
 
         /// <summary>
